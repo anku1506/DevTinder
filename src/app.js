@@ -69,6 +69,25 @@ app.post("/admin/test", (req,res) => {
     res.send("Created");
 })
 
+//throwing error
+app.get("/test", (req, res) => {      
+    throw new error("ndsj,f");
+    res.send("res send");
+  
+})
+
+
+// getting all errors 
+app.use("/", (err, req, res, next) => {
+    if (err) {
+        console.log("got some error");
+        res.status(500).send("Something went wrong");
+    }
+})
+
+
+//better way to use try catch
+
 
 
 
