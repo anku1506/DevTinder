@@ -1,102 +1,45 @@
 const express = require("express");
+const connectDB=require("./config/database");  // needs to call the  db 
 const app = express();
-const { adminAuth,userAuth } =require("./middlewares/auth")
+const User=require("./models/user")
 
-
-// app.use((req,res) => {
-//     res.send("Hello from server");
-// }) - here it will be visible to all route
-
-
-
-
-// app.use("/test",(req,res) => {
-//     res.send("Hello from test2 new test");
-// })
-
-// app.use("/hello",(req,res) => {
-//     res.send("Hello from server");
-// })
-
-
-// its wildcard route
-// app.use("/",(req,res) => {
-//     res.send("from home ");
-// })
-
-
-// app.get("/user", (req, res, next) => {
-//      console.log("first")
-//     res.send("Data Getting....... from 1");
-   
-//     next();
-// }, (req, res) => {
-//     console.log("from2")
-//     res.send("from 2");
-// }
-
-// )
-
-//creating middleware for all type of method get,post,put .......etc
-//checking admin auth
-app.use("/admin", adminAuth)  //adminauth middleware is written in middleare/auth.js
-// app.use("/user",userAuth) // we can use for user auth but if single then also directly put there 
-
-
-app.get("/check", (req, res, next) => {       //here authorization is not checked bcz middleware is only for (/user ) 
-    res.send("Data Getting....... ");  
+//creating a post api
+app.post("/signup", async (req, res) => {
   
-})
-
-
-app.get("/user", userAuth,(req, res, next) => {   // here userauth called directly
-    console.log("user called")
-    res.send("Data Getting....... ");  
-    
-  
-})
-
-
-
-app.get("/admin/getalldata", (req, res) => {      
-    res.send("Data Getting....... ");  
-  
-})
-
-
-
-app.post("/admin/test", (req,res) => {
-    res.send("Created");
-})
-
-//throwing error
-app.get("/test", (req, res) => {      
-    throw new error("ndsj,f");
-    res.send("res send");
-  
-})
-
-
-// getting all errors 
-app.use("/", (err, req, res, next) => {
-    if (err) {
-        console.log("got some error");
-        res.status(500).send("Something went wrong");
+//creating a new instance of a user model
+    const user = new User({
+        firstName: "Satyam",
+        lastName: "kumar",
+        emailId: "satyam@gmail.com",
+        password:"sat@123"
+        
+    });
+    //save is a function which return promise
+    try {
+         await user.save();
+    res.send("user added successfully");
+        
+    } catch(err) {
+        res.status(400).send("Error saving user" + err.message);
     }
+   
+    
+})
+
+//First connect to Db then listen to server
+connectDB().then(() => {
+    console.log("Database connection successful");
+
+    //listening on port 3000
+    app.listen(3000, () => {
+    console.log("Successfully listiening on port :: 3000")
+});  
+    
+}).catch(err => {
+    console.log("DB can't be connected ",err)    
 })
 
 
-//better way to use try catch
 
 
 
-
-
-
-
-
-
-//listening on port 3000
-app.listen(3000, () => {
-    console.log("Successfully listiening on port 3000 ")
-});  
